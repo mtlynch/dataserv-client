@@ -25,7 +25,7 @@ class MockURLError(urllib.error.URLError):
         pass
 
 
-class TestClient(unittest.TestCase):
+class TestClientBase(unittest.TestCase):
 
     def setUp(self):
         urlopen_patch = mock.patch.object(urllib.request, "urlopen",
@@ -36,7 +36,7 @@ class TestClient(unittest.TestCase):
         self.client = api.Client(_MOCK_ADDRESS, url=_MOCK_SERVER_URL)
 
 
-class TestClientRegister(TestClient):
+class TestClientRegister(TestClientBase):
 
     def test_register(self):
         urllib.request.urlopen.return_value.code = 200
@@ -71,7 +71,7 @@ class TestClientRegister(TestClient):
         self.assertFalse(urllib.request.urlopen.called)
 
 
-class TestClientPing(TestClient):
+class TestClientPing(TestClientBase):
 
     def test_ping(self):
         urllib.request.urlopen.return_value.code = 200
@@ -99,7 +99,7 @@ class TestClientPing(TestClient):
         self.assertFalse(urllib.request.urlopen.called)
 
 
-class TestConnectionRetry(TestClient):
+class TestConnectionRetry(TestClientBase):
 
     def test_invalid_retry_limit(self):
         with self.assertRaises(exceptions.InvalidArgument):
@@ -133,7 +133,7 @@ class TestConnectionRetry(TestClient):
                                      mock.call(5), mock.call(5)])
 
 
-class TestClientBuild(TestClient):
+class TestClientBuild(TestClientBase):
 
     def test_address_required(self):
         with self.assertRaises(exceptions.AddressRequired):
