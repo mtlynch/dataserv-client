@@ -125,11 +125,13 @@ class TestApiClientConnectionRetry(TestApiClientBase):
     def test_invalid_retry_limit(self):
         with self.assertRaises(exceptions.InvalidArgument):
             api.ApiClient(_MOCK_SERVER_URL, _MOCK_ADDRESS,
-                          connection_retry_limit=-1)
+                          connection_retry_limit=-1,
+                          connection_retry_delay=0)
 
     def test_invalid_retry_delay(self):
         with self.assertRaises(exceptions.InvalidArgument):
             api.ApiClient(_MOCK_SERVER_URL, _MOCK_ADDRESS,
+                          connection_retry_limit=0,
                           connection_retry_delay=-1)
 
     @mock.patch("time.sleep")
