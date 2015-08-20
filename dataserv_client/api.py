@@ -11,9 +11,11 @@ import urllib
 import urllib.error
 import urllib.request
 import datetime
+from http.client import HTTPException
 from dataserv_client import exceptions
 from dataserv_client import common
 from dataserv_client import builder
+from dataserv_client import deserialize
 from dataserv_client import __version__
 
 
@@ -32,7 +34,7 @@ class Client(object):
         self.url = url
         self.debug = debug
         self.address = address
-        self.max_size = int(max_size)
+        self.max_size = deserialize.byte_count(max_size)
         self.store_path = os.path.realpath(store_path)
 
         if int(connection_retry_limit) < 0:
@@ -82,11 +84,16 @@ class Client(object):
                 raise exceptions.FarmerError(self.url)  # pragma: no cover
             else:
                 raise e  # pragma: no cover
+        except HTTPException:
+            self._handle_connection_error(api_call, retries)
         except urllib.error.URLError:
-            if retries >= self.connection_retry_limit:
-                raise exceptions.ConnectionError(self.url)
-            time.sleep(self.connection_retry_delay)
-            return self._url_query(api_call, retries + 1)
+            self._handle_connection_error(api_call, retries)
+
+    def _handle_connection_error(self, api_call, retries):
+        if retries >= self.connection_retry_limit:
+            raise exceptions.ConnectionError(self.url)
+        time.sleep(self.connection_retry_delay)
+        return self._url_query(api_call, retries + 1)
 
     def register(self):
         """Attempt to register the config address."""
