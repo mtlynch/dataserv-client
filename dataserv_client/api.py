@@ -6,6 +6,7 @@ install_aliases()
 import datetime
 from http.client import HTTPException
 import os
+import socket
 import time
 import urllib
 import urllib.error
@@ -62,6 +63,8 @@ class ApiClient(object):
             self._handle_connection_error(api_path, retries)
         except urllib.error.URLError:
             self._handle_connection_error(api_path, retries)
+        except socket.error:
+            self._handle_connection_error(api_path, retries)
 
     def _handle_connection_error(self, api_path, retries):
         if retries >= self._connection_retry_limit:
@@ -98,6 +101,7 @@ class Client(object):
                  connection_retry_delay=common.DEFAULT_CONNECTION_RETRY_DELAY):
 
         self._validate_client_address(client_address)
+        # FIXME add deserialize.positive_integer for retries
         self._api_client = ApiClient(url, client_address,
                                      connection_retry_limit,
                                      connection_retry_delay)

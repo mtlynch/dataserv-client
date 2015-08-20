@@ -22,7 +22,7 @@ DOWNLOAD_URL = "%(baseurl)s/%(name)s/%(name)s-%(version)s.tar.gz" % {
 
 setup(
     name='dataserv-client',
-    description="",
+    description="Client for storing and auditing data. http://storj.io",
     long_description=open("README.rst").read(),
     keywords="",
     url='http://storj.io',
@@ -33,7 +33,7 @@ setup(
     scripts=[SCRIPT],
     test_suite="tests",
     install_requires=open("requirements.txt").readlines(),
-    tests_require=[], # use `pip install -r test_requirements.txt`
+    tests_require=[],  # use `pip install -r test_requirements.txt`
     download_url=DOWNLOAD_URL,
     packages=find_packages(exclude=['dataserv_client.bin']),
     classifiers=[
